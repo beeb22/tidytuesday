@@ -29,17 +29,18 @@ animal_complaints %>%
     date_received >= as.Date("2014-01-01")
   ) %>%
   ggplot(aes(date_received, n))+
-  geom_col(aes(fill = complaint_type), alpha = 0.7)+
+  geom_col(aes(fill = complaint_type), alpha = 0.6)+
   ylim(-250, 700)+
   labs(
-    title = "Townsville City Council Animal Complaints from 2014",
-    caption = "Data: data.gov.au",
+    title = "Townsville City Council Animal Complaints since 2014",
+    subtitle = "Cats get far fewer complaints than dogs; complaints about both animals peak mid-year.",
+    caption = "Data: Townsville City Council Animal Complaints",
     x = "Date received", 
     y = "Number of complaints",
     fill = "Complaint Type"
   )+
   scale_x_datetime(date_breaks="1 year", date_labels="%Y")+
-  scale_fill_brewer(palette = "Pastel1")+
+  scale_fill_brewer(palette = "Set2")+
   theme_minimal()+
   theme(
     text = element_text(family = "Founders Grotesk Light"),
@@ -49,3 +50,5 @@ animal_complaints %>%
   coord_polar()+
   facet_wrap(~animal_type)
 
+
+ggsave("complaints-by-species.png")
