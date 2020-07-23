@@ -1,33 +1,33 @@
+# load relevant packages
+
 library(tidytuesdayR)
 library(ggplot2)
 library(tidyverse)
 library(lubridate)
 library(janitor)
 
+# load data 
+
 tuesdata <- tidytuesdayR::tt_load(2020, week = 30)
 animal_outcomes <- tuesdata$animal_outcomes
 animal_complaints <- tuesdata$animal_complaints
 brisbane_complaints <- tuesdata$brisbane_complaints
 
+# clean data 
+
 animal_complaints <- 
   animal_complaints %>%
-  clean_names() 
-
-animal_complaints$date_received <- parse_date_time(animal_complaints$date_received, "my")
-animal_complaints %>%
+  clean_names() %>%
   group_by(animal_type, complaint_type, date_received) %>%
-  count() %>%
-  ggplot(aes(date_received, n))+
-  geom_col(aes(fill = animal_type))+
-  facet_wrap(~complaint_type)
-animal_complaints
+  count() 
+animal_complaints$date_received <- parse_date_time(animal_complaints$date_received, "my")
+
+# draw graph
 
 animal_complaints %>%
   filter(
     date_received >= as.Date("2014-01-01")
-         ) %>%
-  group_by(complaint_type, date_received, animal_type) %>%
-  count() %>%
+  ) %>%
   ggplot(aes(date_received, n))+
   geom_col(aes(fill = complaint_type), alpha = 0.7)+
   ylim(-250, 700)+
