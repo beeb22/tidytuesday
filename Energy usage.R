@@ -126,10 +126,12 @@ production_map <- europe_map %>%
   )+
   theme(
     plot.subtitle = element_text(family = "NYTFranklin Light",
+                                 colour = "darkred",
                               margin = margin(20, 0, 0, 0),
                               size = rel(1.5)),
     legend.text = element_text(family = "NYTFranklin Light"),
-    legend.title = element_text(family = "NYTFranklin Light")
+    legend.title = element_text(family = "NYTFranklin Light",
+                                colour = "darkred")
   )
 
 #heat-map of imports in 2018
@@ -181,9 +183,11 @@ imports_map <-
   theme(
     plot.subtitle = element_text(family = "NYTFranklin Light",
                               margin = margin(20, 0, 0, 0),
+                              colour = "darkblue",
                               size = rel(1.5)),
     legend.text = element_text(family = "NYTFranklin Light"),
-    legend.title = element_text(family = "NYTFranklin Light")
+    legend.title = element_text(family = "NYTFranklin Light",
+                                colour = "darkblue")
   )
 
 #heat-map of exports in 2018
@@ -235,23 +239,28 @@ exports_map <-
   theme(
     plot.subtitle = element_text(family = "NYTFranklin Light",
                               margin = margin(20, 0, 0, 0),
+                              colour = "darkgreen",
                               size = rel(1.5)),
     legend.text = element_text(family = "NYTFranklin Light"),
-    legend.title = element_text(family = "NYTFranklin Light")
+    legend.title = element_text(family = "NYTFranklin Light",
+                                colour = "darkgreen")
   )
 
 #save three maps!
 maps_impexp <- 
   production_map + imports_map + exports_map +
   plot_annotation(
-    title = "European energy usage",
-    subtitle = "The top 10 countries in each category are named."
+    title = "European energy intensity",
+    subtitle = "The top 10 countries in each category are named.",
+    caption = "data: Eurostat\nviz: @beeboileau"
   ) &
   theme(
     plot.title = element_text(family = "NYTFranklin Light", size = rel(3), margin = margin(20,0,10,0)),
-    plot.subtitle = element_text(family = "NYTFranklin Light", size = rel(1.5))
+    plot.subtitle = element_text(family = "NYTFranklin Light", size = rel(1.5)),
+    plot.caption = element_text(family = "NYTFranklin Light", margin = margin(10,10,10,10)),
+    legend.position = c(0.2, 0.8)
   )
-ggsave(maps_impexp, "3maps.png", width = 22, height = 12)
+ggsave("3maps.png", width = 20, height = 12)
 
 #-----waffle plot-----
 
