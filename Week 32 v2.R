@@ -100,23 +100,23 @@ production_map <-
                         slice(1:11),
                       alpha = 0.5)+
   scale_fill_steps2(
-    high = "darkred",
+    high = "red2",
     labels = scales::comma,
     name = "GWh"
   )+
   theme_void()+
   theme(
     plot.subtitle = element_text(family = "NYTFranklin Light",
-                                 colour = "darkred",
+                                 colour = "red2",
                                  margin = margin(20, 0, 0, 0),
                                  size = rel(1.5)),
     legend.text = element_text(family = "NYTFranklin Light",
-                               size = rel(0.65)),
+                               size = rel(0.8)),
     legend.title = element_text(family = "NYTFranklin Light",
-                                size = rel(0.8),
-                                colour = "darkred"),
-    legend.position = c(0.3, 0.7),
-    legend.key.size = unit(0.75, "line")
+                                size = rel(1),
+                                colour = "red2"),
+    legend.position = c(0.2, 0.7),
+    legend.key.size = unit(1, "line")
   )+
   coord_sf(xlim = c(2500000, 6500000),
            ylim = c(1550000, 6500000),
@@ -149,7 +149,7 @@ energy_composition <-
   ) %>%
   ungroup() %>%
   mutate(
-    n = n/1000
+    n = n/300
   ) %>%
   arrange(
     desc(total),
@@ -160,7 +160,7 @@ energy_composition <-
              values = n))+
   geom_waffle(n_rows = 10, size = 0.33, color = "white", show.legend = F)+
   coord_equal()+
-  scale_fill_manual(values = c("#31688EFF", "#35B779FF", "#FDE725FF"))+
+  scale_fill_manual(values = c("#31688EFF", "#35B779FF", "#FDE725FF", "#440154FF"))+
   theme_enhance_waffle()+
   facet_wrap(~fct_reorder(country_name, desc(total)), ncol = 1, strip.position = "left")+
   theme_minimal(base_family = "NYTFranklin Light")+
@@ -170,21 +170,23 @@ energy_composition <-
     axis.text = element_blank(),
     legend.position = c(0.8, 0.8),
     legend.title = element_blank(),
-    strip.text.y.left = element_text(angle=0)
+    strip.text.y.left = element_text(angle=0,
+                                     size = rel(2.5))
   )
 
 
                    
 
 layout <- c(
-  area(t = 1, l = 1, b = 5, r = 5),
-  area(t = 3, l = 2, b = 5, r = 5)
+  area(t = 1, l = 1, b = 10, r = 10),
+  area(t = 5, l = 5, b = 10, r = 10)
 )
-waffleenergy <- energy_composition + production_map+
+waffleenergy <- 
+  energy_composition + production_map+
   plot_layout(design = layout) &
   plot_annotation(
     title = "The 10 European countries using most energy in 2018",
-    subtitle = "each box represents one kilo-watt hour; <br>
+    subtitle = "each box represents 1/300 giga-watt hour; <br>
     colours demarcate <b style = 'color:#31688EFF'>conventional thermal</b>,
     <b style = 'color:#35B779FF'>renewable</b>, and
     <b style = 'color:#FDE725FF'>nuclear</b> energy.",
@@ -192,14 +194,17 @@ waffleenergy <- energy_composition + production_map+
   ) &
   theme(
     plot.title = element_text(family = "NYTFranklin Light",
-                              size = rel(2),
-                              margin = margin(20, 200, 0, 0)
+                              size = rel(2.5),
+                              margin = margin(20, 0, 20, 200)
                               ),
     plot.subtitle = element_markdown(family = "NYTFranklin Light",
-                                     size = rel(1.5), 
-                                     margin = margin(20,0,20,0)),
+                                     size = rel(2), 
+                                     margin = margin(20,0,20,200)),
     plot.caption = element_text(family = "NYTFranklin Light", 
-                                margin = margin(10,10,20,10))
+                                margin = margin(10,10,20,10),
+                                size = rel(0.9))
   )
 
+waffleenergy
+?
 ggsave("waffleenergy.png", width = 15, height = 10)
