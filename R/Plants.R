@@ -72,19 +72,19 @@ ggplot(threats_table)+
                 label.padding = unit(0.1, "lines"),
                 family = "JetBrains Mono Light",
                 size = rel(5))+
-  annotate("curve", x = 8, xend = 6, y = 0, yend = 0.05,
+  annotate("curve", x = 8, xend = 6, y = 0.02, yend = 0.05,
            curvature = -0.3,
            arrow = arrow(length = unit(2, "mm"))
            )+
-  geom_richtext(aes(x = 8, y = 0, label = "<b style = 'color:gold'>Climate change</b> first appeared in<br> the 5 top threats between 1980-1999"),
+  geom_richtext(aes(x = 8, y = 0.02, label = "<b style = 'color:gold'>Climate change</b> first appeared in<br> the 5 top threats between 1980-1999"),
                 label.color = NA, 
                 label.padding = unit(0.1, "lines"),
                 family = "JetBrains Mono Light",
                 size = rel(5))+
-  annotate("curve", x = 6, xend = 5, y = 1.1, yend = 0.8,
-           curvature = -0.3,
+  annotate("curve", x = 6.2, xend = 5, y = 1.1, yend = 0.8,
+           curvature = -0.2,
            arrow = arrow(length = unit(2, "mm")))+
-  geom_richtext(aes(x = 6, y = 1.1,
+  geom_richtext(aes(x = 6.2, y = 1.1,
                     label = "The relative threat of<br> <b style = 'color:#440154FF'>agriculture & aquaculture</b> peaked in 1960-1979"),
                 label.color = NA, 
                 label.padding = unit(0.1, "lines"),
@@ -99,7 +99,8 @@ ggplot(threats_table)+
                 family = "JetBrains Mono Light",
                 size = rel(5))+
   labs(
-    title = "Evolution of the top 5 reasons for plants' extinction"
+    title = "Evolution of the top 5 reasons for plants' extinction",
+    caption = "data: IUCN | visualisation: @beeboileau"
 #    subtitle = "The threat of <b style = 'color:#8FD744FF'>invasive species</b> is rising. On the other hand,<br> <b style = 'color:#21908CFF'>natural system modifications</b> are no longer among plants' top 5 threats,<br> and the threat posed by <b style = 'color:#440154FF'>agriculture & aquaculture</b> is falling."
   )+
   theme_minimal(base_family = "JetBrains Mono Light")+
@@ -108,6 +109,8 @@ ggplot(threats_table)+
     axis.text.y = element_blank(),
     plot.title = element_text(size = rel(3),
                               margin = margin(20,200,20,0)),
+    plot.caption = element_text(size = rel(1),
+                              margin = margin(20,0,10,0)),
     legend.title = element_text(size = rel(3)),
 #   plot.subtitle = element_markdown(size = rel(2),
 #                                     margin = margin(0,200,20,0)),
@@ -120,4 +123,4 @@ ggplot(threats_table)+
 
 #save data!
 ggsave("extinction.png", width = 20, height = 10)
-?geom_richtext
+
