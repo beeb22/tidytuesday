@@ -14,11 +14,6 @@ chopped <- tuesdata$chopped
 
 #-----clean data-----
 
-#sort out accent problems
-chopped$judge1 <- stri_trans_general(chopped$judge1, "Latin-ASCII")
-chopped$judge2 <- stri_trans_general(chopped$judge2, "Latin-ASCII")
-chopped$judge3 <- stri_trans_general(chopped$judge3, "Latin-ASCII")
-
 #separate foodstuffs
 chopped <- 
   chopped %>%
@@ -110,7 +105,7 @@ ggplot(foodpositions)+
     y = "IMDB score per episode",
     title = "Frequent Foods and IMDB Ratings",
     subtitle = "11 most frequently used foodstuffs on Chopped, with the IMDB scores of the episodes on which they appeared",
-    caption = "viz: @beeboileau | data = Kaggle  "
+    caption = "viz: @beeboileau | data: Kaggle  "
   )+
   ylim(c(5.3,9.5))+
   annotate("curve", x = 40, xend = 12, y = 6.2, yend = 7.1,
