@@ -13,6 +13,8 @@ library(RColorBrewer)
 library(devtools)
 install_github("dgrtwo/gganimate", ref = "26ec501")
 
+#-----load data-----
+
 tuesdata <- tidytuesdayR::tt_load(2020, week = 36)
 
 arableland <- tuesdata$arable_land_pin
@@ -23,57 +25,8 @@ landuse_vs_yieldchange <- tuesdata$land_use_vs_yield_change_in_cereal_production
 
 worldmap <- ne_countries(scale = "medium", returnclass = "sf")
 
-landuse <- 
-  landuse_vs_yieldchange %>%
-  select(
-    entity = Entity,
-    year = Year,
-    code = Code,
-    cereal_yield = `Cereal yield index`,
-    land_change = `Change to land area used for cereal production since 1961`,
-    population = `Total population (Gapminder)`
-  ) %>%
-  mutate(
-    entity = case_when(
-      entity == "Timor" ~ "Timor-Leste",
-      entity == "North Korea" ~ "Dem. Rep. Korea",
-      entity == "South Korea" ~ "Republic of Korea",
-      entity == "Democratic Republic of Congo" ~ "Democratic Republic of the Congo",
-      entity == "Congo" ~ "Republic of Congo",
-      entity == "Brunei" ~ "Brunei Darussalam",
-      entity == "Cote d'Ivoire" ~ "Côte d'Ivoire",
-      entity == "Czechoslovakia" ~ "Czech Republic",
-      entity == "Sao Tome and Principe" ~ "São Tomé and Principe",
-      entity == "Russia" ~ "Russian Federation",
-      entity == "Gambia" ~ "The Gambia",
-      entity == "Laos" ~ "Lao PDR",
-      entity == "Micronesia (country)" ~ "Federated States of Micronesia",
-      TRUE ~ entity),
-    year = as.numeric(year)
-    ) %>%
-  filter(year > 1959)
 
-landuse_map <-
-  landuse %>%
-  left_join(worldmap, by = c("entity" = "name_long")) %>%
-  select(entity, year, cereal_yield, land_change, population, continent, geometry, region_un) %>%
-  st_as_sf()
-
-landuse_map %>%
-  filter(!is.na(geometry),
-         !is.na(continent)) %>%
-  ggplot()+
-  geom_line(aes(x = year, y = land_change, group = entity), alpha = 0.3)+
-  facet_wrap(~region_un)
-
-landuse_map %>%
-  group_by(continent) %>%
-  summarise(
-    topchange = max(land_change, na.rm = T)
-  )
-
-# cereal yield per population ?
-
+#-----clean data-----
 
 crops <-
   cropyields %>%
@@ -131,9 +84,8 @@ crops_map <-
                values_to = "yield") %>%
   st_as_sf()
 
-#maize, potatoes ?
+#-----highest yielding crops?-----
 
-#highest yielding crops
 crops %>%
   filter(year == 2018) %>%
   pivot_longer(cols = c("peas",
@@ -161,6 +113,8 @@ topcrops <-
          !is.na(code)) %>%
     group_by(year) %>%
     slice_max(order_by = yield, n = 5)
+
+#-----draw animated map-----
 
 potatoes <- 
   crops_map %>%
@@ -195,3 +149,44 @@ potatoes <-
 
 gg_animate(potatoes, "world.gif", title_frame = T, ani.width=1600, ani.height=820)
 
+#-----non-animated version-----
+
+
+crops_map %>%
+  filter(crop == "potatoes",
+         year == "2018") %>%
+  ggplot()+
+  geom_sf(aes(fill = yield), color = "gray90", size = 0.05)+
+  stat_sf_coordinates(data = topcrops %>%
+                        filter(year == 2018),
+                      geom = "text",
+                      aes(label = "★"),
+                      family = "Apple Symbols",
+                      size = 10,
+                      color = "gold",
+                      alpha = 0.9)+
+  coord_sf(crs = "+proj=robin")+
+  theme_map(base_family = "NYTFranklin Light")+
+  scale_fill_steps(n.breaks = 10, 
+                   low = "#E5F5E0",
+                   high = "#31A354",
+                   na.value = "white",
+                   name = "Potato yield (tonnes per hectare)")+
+  theme(legend.position = "bottom",
+        legend.justification = "centre",
+        legend.key.size = unit(2, "cm"), 
+        legend.background = element_rect(fill = "darkgray", color = "darkgray"),
+        plot.background = element_rect(fill = "darkgray", color = "darkgray"),
+        plot.title = element_text(colour = "white", size = rel(4), margin = margin(20,0,20,0), hjust = 0.1),
+        plot.caption = element_text(colour = "white", size = rel(1)),
+        plot.subtitle = element_text(colour = "white", size = rel(3), margin = margin(0,0,20,0), hjust = 0.03))+
+  labs(title = "Where were potatoes produced most efficiently in 2018?",
+       subtitle = "The top 5 countries are starred",
+       caption = "data: OWID | graphic: @beeboileau")+
+  guides(fill = guide_colorbar(title.position = "top",
+                               title.hjust = 0.5,
+                               label.theme = element_text(colour = "white", family = "NYTFranklin Light"),
+                               title.theme = element_text(colour = "white", family = "NYTFranklin Light")))
+
+ggsave("potatoproduction.png", scale = 2)
+?ggsave
