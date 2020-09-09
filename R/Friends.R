@@ -25,6 +25,18 @@ friends_table <-
     av_viewers = mean(us_views_millions)
   )
 
+friends_words <- 
+  friends %>%
+  filter(speaker %in% c("Monica Geller", "Rachel Green", "Chandler Bing",
+                        "Phoebe Buffay", "Ross Geller", "Joey Tribbiani")) %>%
+  mutate(
+    line_words = stri_count_words(text)
+  ) %>%
+  group_by(speaker, season) %>%
+  summarise(
+    speaker_words = sum(line_words)
+  ) 
+
 #-----Create bar chart-----
 
 barchart1  <- 
