@@ -79,7 +79,7 @@ ggdraw()+
             col = "gray60")
   
   
-ggsave("education.png", width = 12, height = 10)
+ggsave("education.png", width = 12, height = 8)
 
 
 
