@@ -1,8 +1,5 @@
 library(tidytuesdayR)
 library(tidyverse)
-library(maps)
-library(biscale)
-library(cowplot)
 library(ggtext)
 
 tuesdata <- tidytuesdayR::tt_load(2020, week = 39)
@@ -15,78 +12,42 @@ str(peaks)
 str(members)
 str(expeditions)
 
-peaks_fixed <- peaks %>%
-  mutate(first_ascent_year = ifelse(peak_id == "SPH2", 2018, first_ascent_year))
-
-peaks_fixed %>%
-  ggplot(aes(first_ascent_year)) +
-  geom_histogram(binwidth = 5, direction = -1, alpha = 0.8) +
-  scale_x_continuous(breaks = seq(1910, 2020, 10)) +
-  labs(title = "Climbers are still summitting peaks for the first time",
-       subtitle = "Year of first ascent for Himalayan peaks",
-       caption = "Source: The Himalayan Database",
-       x = "Year of first ascent (5-year bins)",
-       y = "Number of first ascents") +
-  theme(text = element_text(family = "Bahnschrift"),
-        panel.grid.minor = element_blank())
-
-peaks_fixed %>%
-  ggplot(aes(height_metres))+
-  geom_histogram(binwidth = 100, alpha = 0.8)
-
-peaks_fixed %>%
-  ggplot()+
-  geom_point(aes(x = first_ascent_year, y = height_metres),
-             alpha = 0.4)+
-  theme_minimal(base_family = "Bahnschrift")
-
-#were women's outcomes different from men's?
-#get proportion
-
-members %>%
+#extremely speedy data wrangle
+exp_size <- members %>%
+  filter(peak_name == "Everest") %>%
   group_by(expedition_id) %>%
   summarise(
     number_onexp = n(),
     year = mean(year)
-  ) %>%
-  ggplot()+
+  )
+
+#dot plot
+ggplot(exp_size)+
   geom_point(aes(x = year, y = number_onexp),
-             alpha = 0.1)+
-  geom_smooth(aes(y = number_onexp, x = year), 
-              color = "orange", se = F, alpha = 0.01)+
-  labs(title = "Expedition size over time",
-       subtitle = "While it might appear from the fact the maximum journey has got larger over time that crew size
-is an increasing function of time, the trend is actually fairly constant",
+             alpha = 0.2)+
+  geom_point(data = subset(exp_size, number_onexp > 80),
+             aes(x = year, y = number_onexp), pch = 21)+
+  geom_text(data = subset(exp_size, number_onexp > 80),
+            aes(x = year, y = number_onexp - 3, label = paste0("The largest expedition had ", number_onexp, " members")),
+            family = "Bahnschrift", color = "gray60")+
+  geom_smooth(aes(y = number_onexp, x = year),
+              color = "orange", se = F, alpha = 0.01, method = "lm")+
+  labs(title = "Everest expedition size over time",
+       subtitle = "The maximum number of people on a single Everest expedition has grown over time, from below 50 to 99.
+Average expedition sizes, though, have fallen over time, with an increasingly large number of solo expeditions.
+This plot illustrates the change in the average by fitting a linear regression to the data points.",
        caption = "Source: The Himalayan Database | Visualisation: @beeboileau",
        x = "Year of expedition",
        y = "Number of expedition members") +
-  theme_minimal(base_family = "Bahnschrift")
-
+  theme_minimal(base_family = "Bahnschrift")+
+  theme(
+    plot.background = element_rect(fill = "#F0EFEB",
+                                   color = "#F0EFEB")
+  )
+  
 ggsave("expeditionsize.png", height = 8, width = 8)
 
-members %>%
-  group_by(expedition_id, sex, year) %>%
-  summarise(
-    num = n(),
-    year = mean(year)
-  ) %>%
-  filter(num > 3) %>%
-  pivot_wider(names_from = sex, values_from = num) %>%
-  mutate_at(c(2:4), ~replace(., is.na(.), 0)) %>%
-  mutate(
-    fem_prop = F/(F+M)
-  ) %>%
-  ggplot()+
-  geom_point(aes(x = year, y = fem_prop), alpha = 0.3)+
-  geom_smooth(aes(x = year, y = fem_prop), colour = "orange")+
-  labs(title = "Proportion of women in expedition groups (n > 3) over time",
-       subtitle = "The proportion is growing, although t",
-       caption = "Source: The Himalayan Database | Visualisation: @beeboileau",
-       x = "Year of expedition",
-       y = "Number of expedition members") +
-  theme_minimal(base_family = "Bahnschrift")
 
-#ok lets try n do like...bars filled in (orange?)
 
 members %>%
   group_by(sex, year) %>%
@@ -113,7 +74,10 @@ members %>%
     panel.grid.major.y = element_blank(),
     plot.subtitle = element_markdown(),
     panel.grid.major.x = element_line(linetype = "dotted"),
-    panel.grid.minor.x = element_line(linetype = "dotted")
+    panel.grid.minor.x = element_line(linetype = "dotted"),
+    plot.background = element_rect(fill = "#F0EFEB",
+                                   color = "#F0EFEB")
   )
 
+ggsave("womenclimbers.png", width = 8, height = 8)
            
