@@ -12,14 +12,10 @@ library(stringi)
 library(gghighlight)
 library(tvthemes)
 
-import_avatar()
-
 #load data
 tuesdata <- tidytuesdayR::tt_load(2020, week = 33)
 avatar <- tuesdata$avatar
 scene_desc <- tuesdata$scene_description
-
-import_avatar()
 
 #count words
 avatar_bookwords <- 
@@ -92,7 +88,8 @@ wordspercharacter<-
     plot.subtitle = element_text(size = rel(0.8),
                                  margin = margin(0,0,30,0)),
     legend.title = element_text(size = rel(0.8)),
-    legend.text = element_text(size = rel(0.6))
+    legend.text = element_text(size = rel(0.8)),
+    legend.position = "bottom"
   )
 
 linespercharacter <-
