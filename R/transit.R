@@ -83,7 +83,7 @@ table <-
     title = md("**The five most expensive transit projects are all from New York**"),
     subtitle = md("**whereas none of the five least expensive are in America**")
   ) %>%
-  tab_source_note("Data: City Transit Project | Visualisation: @beeboileau") %>%
+  tab_source_note("Data: Transit Costs Project | Visualisation: @beeboileau") %>%
   tab_footnote(footnote = "'Expensive' here means real cost per kilometre",
                locations = cells_title(
                  groups = "title"
